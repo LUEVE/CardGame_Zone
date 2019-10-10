@@ -1,0 +1,16 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{2E09C30B-4328-0E74-193C-5F9CC76C540E}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "CardGame_Zone",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
+	]
+}
