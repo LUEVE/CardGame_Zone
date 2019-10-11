@@ -28,7 +28,8 @@ class CARDGAME_ZONE_API AZZoneBlock : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
+public:
+	friend class AZPlayerBlock;
 	// Sets default values for this actor's properties
 	AZZoneBlock();
 	void Init(int y,int x,EZoneBlockKind BlockKind);
@@ -47,6 +48,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	void InitZoneBlock();
+	void ChangeCurrentPlayerBlock(int ToPlayer);
+	void DestroyCurrentPlayerBlock();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

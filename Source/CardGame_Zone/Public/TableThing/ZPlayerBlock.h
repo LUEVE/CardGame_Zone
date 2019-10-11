@@ -28,16 +28,22 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	UFUNCTION(BlueprintCallable)
-	void ActionExpansion();
+
 	UFUNCTION(Server, Reliable,WithValidation)
 	void ServeActionExpansion();
+	UFUNCTION(Server,Reliable,WithValidation)
+	void ServeActionAnnexation(int y,int x);
 
 	UFUNCTION(BlueprintCallable)
+	void DoServeActionAnnexation(AZPlayerBlock* ChangePlayerBlock);
+	UFUNCTION(BlueprintCallable)
 	void DoServeActionExpansion();
-
-	void ActionAnnexation();
-
+	UFUNCTION(BlueprintCallable)
+	void ActionAnnexation(int y,int x);
+	UFUNCTION(BlueprintCallable)
+	void ActionExpansion();
+	UFUNCTION(BlueprintCallable)
+	void ChangePlayerBlockOwner(AZPlayerBlock* ChangeToThisPlayerBlock);
 
 public:	
 	// Called every frame

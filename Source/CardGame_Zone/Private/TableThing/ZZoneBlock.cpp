@@ -95,7 +95,7 @@ void AZZoneBlock::CreateBaseBlock(int Player)
 
 void AZZoneBlock::CreateNormalBlock(int Player)
 {
-	auto& NormalBlock = NormalBlock_Player0;
+	UClass* NormalBlock = NormalBlock_Player0;
 	if (Player)
 	{
 		NormalBlock = NormalBlock_Player1;
@@ -105,7 +105,7 @@ void AZZoneBlock::CreateNormalBlock(int Player)
 		UE_LOG(LogTemp, Log, TEXT("NormalBlock is nullptr, please see whether set NormalBlock"));
 		return;
 	}
-	if (!bHasBlock && !BIsBaseBlockPlace)
+	if (!bHasBlock)
 	{
 		bHasBlock = true;
 		FActorSpawnParameters SpawnParameters;
@@ -138,6 +138,19 @@ void AZZoneBlock::BeginPlay()
 void AZZoneBlock::InitZoneBlock()
 {
 
+}
+
+void AZZoneBlock::ChangeCurrentPlayerBlock(int ToPlayer)
+{
+	//auto tempPlayerBlock = CurrentPlayerBlock;
+	DestroyCurrentPlayerBlock();
+	CreateNormalBlock(ToPlayer);
+}
+
+void AZZoneBlock::DestroyCurrentPlayerBlock()
+{
+	CurrentPlayerBlock->Destroy();
+	this->bHasBlock = 0;
 }
 
 // Called every frame

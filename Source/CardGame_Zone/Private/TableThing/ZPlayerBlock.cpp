@@ -52,20 +52,50 @@ void AZPlayerBlock::BeginPlay()
 }
 
 
+
+void AZPlayerBlock::ServeActionAnnexation_Implementation(int y,int x)
+{
+	ActionAnnexation(y,x);
+}
+
+bool AZPlayerBlock::ServeActionAnnexation_Validate(int y,int x)
+{
+	return true;
+}
+
+void AZPlayerBlock::DoServeActionAnnexation(AZPlayerBlock* ChangePlayerBlock)
+{
+	
+	this->SetOwner(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	auto t = GetOwner();
+	ServeActionAnnexation(ChangePlayerBlock->GridY,ChangePlayerBlock->GridX);
+}
+
 void AZPlayerBlock::DoServeActionExpansion()
 {
 	auto t = GetOwner();
 	ServeActionExpansion();
 }
 
-void AZPlayerBlock::ActionAnnexation()
+void AZPlayerBlock::ActionAnnexation(int y,int x)
 {
-	if (OwnerZoneBlock)
-	{
-		
-	}
-
+	//ChangePlayerBlockOwner(BeginPlayerBlock);
+	//auto _OwnerZoneBlock = OwnerZoneBlock;
+	//int Player = (PlayerOwner ? 0 : 1);
+	//_OwnerZoneBlock->ChangeCurrentPlayerBlock(Player);
+	auto& ZoneBlockArray = OwnerZoneBlock->OwnerBlockGrid->ZoneBlocksArray;
+	ZoneBlockArray[y].Array[x]->ChangeCurrentPlayerBlock(PlayerOwner);
 }
+
+// @TODO
+void AZPlayerBlock::ChangePlayerBlockOwner(AZPlayerBlock* ChangeToThisPlayerBlock)
+{
+	this->PlayerOwner = ChangeToThisPlayerBlock->PlayerOwner;
+	
+	
+}
+
+
 void AZPlayerBlock::ActionExpansion()
 {
 
@@ -88,21 +118,21 @@ void AZPlayerBlock::ActionExpansion()
 
 void AZPlayerBlock::ServeActionExpansion_Implementation()
 {
-	//ActionExpansion();
-	if (OwnerZoneBlock)
-	{
-		auto& TempArray = OwnerZoneBlock->GetOwnerZoneBlockGrid()->ZoneBlocksArray;
-		int foot[5][2] = { {0,1},{0,-1},{1,0},{-1,0} };
-		for (int i = 0; i < 5; i++)
-		{
-			int y = GridY + foot[i][1];
-			int x = GridX + foot[i][0];
-			if (JudgeExpansion(y, x))
-			{
-				TempArray[y].Array[x]->CreateNormalBlock(PlayerOwner);
-			}
-		}
-	}
+	ActionExpansion();
+	// if (OwnerZoneBlock)
+	// {
+	// 	auto& TempArray = OwnerZoneBlock->GetOwnerZoneBlockGrid()->ZoneBlocksArray;
+	// 	int foot[5][2] = { {0,1},{0,-1},{1,0},{-1,0} };
+	// 	for (int i = 0; i < 5; i++)
+	// 	{
+	// 		int y = GridY + foot[i][1];
+	// 		int x = GridX + foot[i][0];
+	// 		if (JudgeExpansion(y, x))
+	// 		{
+	// 			TempArray[y].Array[x]->CreateNormalBlock(PlayerOwner);
+	// 		}
+	// 	}
+	// }
 }
 
 
