@@ -17,27 +17,36 @@ class CARDGAME_ZONE_API AZPlayerController : public APlayerController
 public:
 	UFUNCTION(Reliable, Client, BlueprintCallable)
 	void ChangeRoundState();
+
+	UFUNCTION(Reliable,BlueprintCallable, Client)
+	void EndRound();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BPEndRound();
+
 	void Init(int ID);
 protected:
 	void virtual BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
-	void CreateTurnWidget();
+	void OnRep_CreateRoundWidget();
 private:
-	void DestroyTurnWidget();
+	void DestroyRoundWidget();
 	
 
 //variable
 public:
 
-	UPROPERTY(BlueprintReadWrite, Replicated, VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRep_CreateRoundWidget, VisibleAnywhere)
 	bool BisMyRound;
 protected:
 	UPROPERTY(BlueprintReadWrite,Replicated)
 	int PlayerControllerID;
+	UPROPERTY(BlueprintReadWrite, Replicated)
+		bool BisCreateRoundWidget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> MyTurnWidget;
+	TSubclassOf<UUserWidget> MyRoundWidget;
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> OpponentTurnWidget;
-	UUserWidget* NowTurnWidget;
+	TSubclassOf<UUserWidget> OpponentRoundWidget;
+	UUserWidget* NowRoundWidget;
 };

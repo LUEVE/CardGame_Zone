@@ -9,23 +9,23 @@
 void AZPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	//@TODO judge widget whether null
 }
 
-void AZPlayerController::CreateTurnWidget()
+void AZPlayerController::OnRep_CreateRoundWidget()
 {
 
-	UClass* TurnWidget = OpponentTurnWidget;
+	UClass* TurnWidget = OpponentRoundWidget;
 	if (BisMyRound)
-		TurnWidget = MyTurnWidget;
+		TurnWidget = MyRoundWidget;
 
-	NowTurnWidget = CreateWidget<UUserWidget>(this, TurnWidget);
-	if(NowTurnWidget)
+	NowRoundWidget = CreateWidget<UUserWidget>(this, TurnWidget);
+	if(NowRoundWidget)
 	{
-		NowTurnWidget->AddToViewport();
+		NowRoundWidget->AddToViewport();
 		FTimerHandle UnusedHandle;
-		GetWorldTimerManager().SetTimer(UnusedHandle,this,&AZPlayerController::DestroyTurnWidget, 1, false, 1);
+		GetWorldTimerManager().SetTimer(UnusedHandle,this,&AZPlayerController::DestroyRoundWidget, 1, false, 3);
 	}
 	else
 	{
@@ -34,21 +34,32 @@ void AZPlayerController::CreateTurnWidget()
 
 }
 
-void AZPlayerController::DestroyTurnWidget()
+
+void AZPlayerController::DestroyRoundWidget()
 {
-	NowTurnWidget->RemoveFromParent();
-	NowTurnWidget = nullptr;
+	if(NowRoundWidget)
+	{
+		NowRoundWidget->RemoveFromParent();
+		NowRoundWidget = nullptr;
+	}
+
 }
 
 void AZPlayerController::ChangeRoundState_Implementation()
 {
 
-	CreateTurnWidget();
+	OnRep_CreateRoundWidget();
+}
+
+void AZPlayerController::EndRound_Implementation()
+{
+	BPEndRound();
 }
 
 void AZPlayerController::Init(int ID)
 {
 	PlayerControllerID = ID;
+	BisMyRound = false;
 }
 
 void AZPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &OutLifetimeProps) const
