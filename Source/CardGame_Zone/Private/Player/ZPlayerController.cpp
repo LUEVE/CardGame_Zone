@@ -13,7 +13,7 @@ void AZPlayerController::BeginPlay()
 	//@TODO judge widget whether null
 }
 
-void AZPlayerController::OnRep_CreateRoundWidget()
+void AZPlayerController::CreateRoundWidget()
 {
 
 	UClass* TurnWidget = OpponentRoundWidget;
@@ -48,7 +48,7 @@ void AZPlayerController::DestroyRoundWidget()
 void AZPlayerController::ChangeRoundState_Implementation()
 {
 
-	OnRep_CreateRoundWidget();
+	CreateRoundWidget();
 }
 
 void AZPlayerController::EndRound_Implementation()

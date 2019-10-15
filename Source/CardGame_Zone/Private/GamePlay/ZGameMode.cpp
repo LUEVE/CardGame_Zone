@@ -7,40 +7,51 @@
 #include "Engine/World.h"
 #include "ZPlayerController.h"
 #include "TimerManager.h"
-
+#include "ZGameState.h"
 
 void AZGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 	ForPlayerControllerID = -1;
-	NowPlayerNum = 0;
 	bHasPrepared = false;
 	BaseRoundTime = 10;
-
+	bDelayedStart = true;
 }
 
 
 void AZGameMode::RoundTick()
 {
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
-	{
-		APlayerController* PC = It->Get();
-		if (PC)
-		{
-			AZPlayerController* ZPC = Cast<AZPlayerController>(PC);
+	// for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
+	// {
+	// 	APlayerController* PC = It->Get();
+	// 	if (PC)
+	// 	{
+	// 		AZPlayerController* ZPC = Cast<AZPlayerController>(PC);
+	//
+	// 		ZPC->EndRound();
+	// 		ZPC->BisMyRound = !ZPC->BisMyRound;
+	// 		//ZPC->ChangeRoundState();
+	//
+	// 	}
+	// }
 
-			ZPC->EndRound();
-			ZPC->BisMyRound = !ZPC->BisMyRound;
-			//ZPC->ChangeRoundState();
-
-		}
-	}
+	auto GameState = GetGameState<AZGameState>();
+	GameState->ChangeRound();
 }
+
+void AZGameMode::Tick(float DeltaSeconds)
+{
+	
+	UE_LOG(LogTemp, Log, TEXT("Numplayers %d"),NumPlayers);
+	//UE_LOG(LogTemp, Log, TEXT("Wether ReadyToStartMatch %d"), ReadyToStartMatch());
+}
+
+
 
 void AZGameMode::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
-
+	AllPlayControllerHasPrepared();
 	
 }
 
@@ -53,19 +64,38 @@ void AZGameMode::HandleMatchHasEnded()
 	// GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &AZGameMode::RoundTick, BaseRoundTime, true, 0);
 }
 
+void AZGameMode::HandleMatchIsWaitingToStart()
+{
+	Super::HandleMatchIsWaitingToStart();
+
+}
+
+void AZGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId,
+	FString& ErrorMessage)
+{
+	
+
+	if (NumPlayers >= 2)
+	{
+		ErrorMessage = "NumPlayer is two enough";
+	}
+
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+}
+
 
 void AZGameMode::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 	//auto nowPlayercontroller = NewPlayer;
-	NowPlayerNum++;
 	auto NowPlayerController = Cast<AZPlayerController>(NewPlayer);
+	auto NowPlayerState = NewPlayer->PlayerState;
 	ForPlayerControllerID++;
 	NowPlayerController->Init(ForPlayerControllerID);
-
-	if (NowPlayerNum >= 2 && !bHasPrepared)
+	UE_LOG(LogTemp, Log, TEXT("PostLogin now, Nowplayers %d"), NumPlayers);
+	if (NumPlayers == 2 && !bHasPrepared)
 	{
-		AllPlayControllerHasPrepared();
+		StartMatch();
 	}
 }
 
@@ -82,17 +112,17 @@ void AZGameMode::AllPlayControllerHasPrepared()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AZPlayerController::StaticClass(), PlayerControllers);
 	ZoneBlockGird->InitPlayerBaseZone();
 
-	bool temp = false;
-	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
-	{
-		APlayerController* PC = It->Get();
-		if (PC)
-		{
-			AZPlayerController* ZPC = Cast<AZPlayerController>(PC);
-			ZPC->BisMyRound = temp;
-			temp = !temp;
-		}
-	}
+	// bool temp = false;
+	// for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
+	// {
+	// 	APlayerController* PC = It->Get();
+	// 	if (PC)
+	// 	{
+	// 		AZPlayerController* ZPC = Cast<AZPlayerController>(PC);
+	// 		ZPC->BisMyRound = temp;
+	// 		temp = !temp;
+	// 	}
+	// }
 
 	FTimerHandle RoundTimerHandle;
 	GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &AZGameMode::RoundTick, BaseRoundTime, true, 3);

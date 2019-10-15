@@ -28,7 +28,7 @@ public:
 protected:
 	void virtual BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
-	void OnRep_CreateRoundWidget();
+	void CreateRoundWidget();
 private:
 	void DestroyRoundWidget();
 	
@@ -36,13 +36,15 @@ private:
 //variable
 public:
 
-	UPROPERTY(BlueprintReadWrite, ReplicatedUsing=OnRep_CreateRoundWidget, VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite, Replicated, VisibleAnywhere)
 	bool BisMyRound;
-protected:
-	UPROPERTY(BlueprintReadWrite,Replicated)
-	int PlayerControllerID;
+	// 0 or 1
 	UPROPERTY(BlueprintReadWrite, Replicated)
-		bool BisCreateRoundWidget;
+	int PlayerControllerID;
+protected:
+
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	bool BisCreateRoundWidget;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> MyRoundWidget;

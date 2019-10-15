@@ -19,16 +19,20 @@ public:
 protected:
 	virtual void HandleMatchHasStarted() override;
 	virtual void HandleMatchHasEnded() override;
+	virtual void HandleMatchIsWaitingToStart() override;
+
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
-
 	void AllPlayControllerHasPrepared();
-	void RoundTick();
+
 	
+	void RoundTick();
+	void Tick(float DeltaSeconds) override;
 
 private:
 	const int ReadyPlayerNum = 2;
-	int NowPlayerNum;
+	//int NowPlayerNum;
 	bool bHasPrepared;
 	int ForPlayerControllerID;
 
