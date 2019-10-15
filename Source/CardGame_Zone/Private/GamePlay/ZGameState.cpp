@@ -15,11 +15,6 @@ void AZGameState::HandleMatchIsWaitingToStart()
 void AZGameState::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
-	for (auto Element : PlayerArray)
-	{
-		
-	}
-	
 }
 
 void AZGameState::RoundHasChanged()
