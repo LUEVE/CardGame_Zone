@@ -18,6 +18,8 @@ class CARDGAME_ZONE_API AZPlayerController : public APlayerController
 public:
 	UFUNCTION(Reliable, Client, BlueprintCallable)
 	void ChangeRoundState();
+	UFUNCTION(BlueprintImplementableEvent)
+	void BPChangeRoundState();
 
 	UFUNCTION(Reliable,BlueprintCallable, Client)
 	void EndRound();

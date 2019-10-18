@@ -30,13 +30,16 @@ void AZPlayerController::CreateRoundWidget()
 	UClass* TurnWidget = OpponentRoundWidget;
 	if (BisMyRound)
 		TurnWidget = MyRoundWidget;
-
+	if(NowRoundWidget)
+	{
+		DestroyRoundWidget();
+	}
 	NowRoundWidget = CreateWidget<UUserWidget>(this, TurnWidget);
 	if(NowRoundWidget)
 	{
 		NowRoundWidget->AddToViewport();
 		FTimerHandle UnusedHandle;
-		GetWorldTimerManager().SetTimer(UnusedHandle,this,&AZPlayerController::DestroyRoundWidget, 1, false, 3);
+		GetWorldTimerManager().SetTimer(UnusedHandle,this,&AZPlayerController::DestroyRoundWidget, 1, false, 2);
 	}
 	else
 	{
@@ -59,6 +62,7 @@ void AZPlayerController::DestroyRoundWidget()
 void AZPlayerController::ChangeRoundState_Implementation()
 {
 	CreateRoundWidget();
+	BPChangeRoundState();
 	CurrentTable->PlayTimeline();
 }
 
