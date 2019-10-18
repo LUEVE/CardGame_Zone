@@ -9,11 +9,16 @@
 /**
  * 
  */
+
+//class FTimerHandle;
+
 UCLASS()
 class CARDGAME_ZONE_API AZGameState : public AGameState
 {
 	GENERATED_BODY()
 public:
+
+	//void DoServeChangeRound();
 	void ChangeRound();
 protected:
 	virtual void HandleMatchIsWaitingToStart() override;
@@ -24,8 +29,15 @@ protected:
 private:
 
 // variable
+public:
+	UPROPERTY(BlueprintReadWrite, Replicated)
+	int RoundTime;
 protected:
 	// 0 or 1,compare to ZPlayerController->PlayerControllerID
 	UPROPERTY(VisibleAnywhere,ReplicatedUsing=RoundHasChanged)
 	int WhoRound;
+
+	FTimerHandle TimerHandle_Round;
+private:
+
 };

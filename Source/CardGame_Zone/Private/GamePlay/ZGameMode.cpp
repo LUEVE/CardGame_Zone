@@ -21,20 +21,6 @@ void AZGameMode::InitGame(const FString& MapName, const FString& Options, FStrin
 
 void AZGameMode::RoundTick()
 {
-	// for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
-	// {
-	// 	APlayerController* PC = It->Get();
-	// 	if (PC)
-	// 	{
-	// 		AZPlayerController* ZPC = Cast<AZPlayerController>(PC);
-	//
-	// 		ZPC->EndRound();
-	// 		ZPC->BisMyRound = !ZPC->BisMyRound;
-	// 		//ZPC->ChangeRoundState();
-	//
-	// 	}
-	// }
-
 	auto GameState = GetGameState<AZGameState>();
 	GameState->ChangeRound();
 }
@@ -125,7 +111,7 @@ void AZGameMode::AllPlayControllerHasPrepared()
 	// }
 
 	FTimerHandle RoundTimerHandle;
-	GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &AZGameMode::RoundTick, BaseRoundTime, true, 3);
+	GetWorldTimerManager().SetTimer(RoundTimerHandle, this, &AZGameMode::RoundTick, BaseRoundTime, false, 3);
 }
 
 

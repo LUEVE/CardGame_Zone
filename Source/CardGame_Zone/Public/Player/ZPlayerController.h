@@ -9,6 +9,7 @@
 /**
  * 
  */
+class AZTable;
 UCLASS()
 class CARDGAME_ZONE_API AZPlayerController : public APlayerController
 {
@@ -23,6 +24,10 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BPEndRound();
+	UFUNCTION(Server,Reliable,WithValidation)
+	void ServeEndRound();
+	UFUNCTION(BlueprintCallable)
+	void DoServeEndRound();
 
 	void Init(int ID);
 protected:
@@ -51,4 +56,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UUserWidget> OpponentRoundWidget;
 	UUserWidget* NowRoundWidget;
+	UPROPERTY(BlueprintReadWrite)
+	AZTable* CurrentTable;
 };

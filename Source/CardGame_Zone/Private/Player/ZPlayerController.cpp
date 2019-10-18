@@ -5,11 +5,22 @@
 #include "UnrealNetwork.h"
 #include "UserWidget.h"
 #include "TimerManager.h"
+#include "EngineUtils.h"
+#include "ZGameState.h"
+#include "ZTable.h"
 
 void AZPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	for (TActorIterator<AZTable> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	{
+		// Same as with the Object Iterator, access the subclass instance with the * or -> operators.
+		CurrentTable = *ActorItr;
+		ClientMessage(ActorItr->GetName());
+		ClientMessage(ActorItr->GetActorLocation().ToString());
+	}
+
 	//@TODO judge widget whether null
 }
 
@@ -47,13 +58,32 @@ void AZPlayerController::DestroyRoundWidget()
 
 void AZPlayerController::ChangeRoundState_Implementation()
 {
-
 	CreateRoundWidget();
+	CurrentTable->PlayTimeline();
 }
 
 void AZPlayerController::EndRound_Implementation()
 {
 	BPEndRound();
+}
+
+void AZPlayerController::ServeEndRound_Implementation()
+{
+	auto GS = GetWorld()->GetGameState<AZGameState>();
+	if(GS)
+		GS->ChangeRound();
+ 
+}
+
+bool AZPlayerController::ServeEndRound_Validate()
+{
+
+	return true;
+}
+
+void AZPlayerController::DoServeEndRound()
+{
+	ServeEndRound();
 }
 
 void AZPlayerController::Init(int ID)

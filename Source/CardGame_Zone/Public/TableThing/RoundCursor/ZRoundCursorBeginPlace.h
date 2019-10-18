@@ -4,46 +4,34 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ZTable.generated.h"
-
+#include "ZRoundCursorBeginPlace.generated.h"
 class UStaticMeshComponent;
-class USphereComponent;
-class AZZoneBlockGrid;
+class USceneComponent;
 class UBoxComponent;
-
 UCLASS()
-class CARDGAME_ZONE_API AZTable : public AActor
+class CARDGAME_ZONE_API AZRoundCursorBeginPlace : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AZTable();
+	AZRoundCursorBeginPlace();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	//UFUNCTION(BlueprintCallable)
-	void InitTable();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-
-// Variable
+	//variable
 public:
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
-	UBoxComponent* BoxComponent;
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Component")
-	UStaticMeshComponent *MeshComponent;
-	TSubclassOf<AZZoneBlockGrid> ZoneBlockGrid;
-	UPROPERTY(BlueprintReadOnly,Replicated)
-	AZZoneBlockGrid* CurrentZoneBlockGrid;
-
-private:
-	
-
-
+		UStaticMeshComponent* MeshComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		USceneComponent* SceneComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		UBoxComponent* BoxComponent;
 };

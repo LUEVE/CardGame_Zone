@@ -5,11 +5,20 @@
 #include "ZPlayerController.h"
 #include "Engine/World.h"
 #include "UnrealNetwork.h"
+#include "ZGameMode.h"
+#include "TimerManager.h"
+
 
 void AZGameState::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
 
+	if(Role == ROLE_Authority)
+	{
+		auto GameMode = GetWorld()->GetAuthGameMode<AZGameMode>();
+		RoundTime = GameMode->BaseRoundTime;
+	}
+	
 }
 
 void AZGameState::HandleMatchHasStarted()
@@ -34,6 +43,8 @@ void AZGameState::ChangeRound()
 {
 	if (Role == ROLE_Authority)
 	{
+		GetWorldTimerManager().ClearTimer(TimerHandle_Round);
+		GetWorldTimerManager().SetTimer(TimerHandle_Round, this, &AZGameState::ChangeRound, RoundTime, false, RoundTime);
 		WhoRound = WhoRound ? 0 : 1;
 		for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; It++)
 		{
@@ -61,6 +72,7 @@ void AZGameState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &OutLif
 {
 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AZGameState,WhoRound );
+	DOREPLIFETIME(AZGameState,WhoRound);
+	DOREPLIFETIME(AZGameState,RoundTime);
 	//DOREPLIFETIME(AZPlayerController, BisMyRound);
 }

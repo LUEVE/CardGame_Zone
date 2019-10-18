@@ -4,13 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/TimelineComponent.h"
+//#include "Components/TimelineComponent.h"
 #include "ZTable.generated.h"
 
 class UStaticMeshComponent;
 class USphereComponent;
-class AZZoneBlockGrid;
+class USceneComponent;
 class UBoxComponent;
-
+class AZZoneBlockGrid;
+class AZRoundCursor;
 UCLASS()
 class CARDGAME_ZONE_API AZTable : public AActor
 {
@@ -28,22 +31,54 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
 
 // Variable
 public:
-
+	void PlayTimeline();
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	UBoxComponent* BoxComponent;
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Component")
 	UStaticMeshComponent *MeshComponent;
+	
 	TSubclassOf<AZZoneBlockGrid> ZoneBlockGrid;
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	AZZoneBlockGrid* CurrentZoneBlockGrid;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+	USceneComponent*SceneComponent;
+	UPROPERTY(EditDefaultsOnly, Category = "RoundCursor")
+	TSubclassOf<AZRoundCursor> RoundCursorKind;
+	UPROPERTY(BlueprintReadWrite)
+	AZRoundCursor* CurrentRoundCursor;
+	UPROPERTY(EditDefaultsOnly, Category = "RoundCursor")
+	FVector CursorBeginLocation;
+	UPROPERTY(EditDefaultsOnly, Category = "RoundCursor")
+	FVector CursorEndLocation;
 
+	// timeLine
+	UPROPERTY()
+	UTimelineComponent* MyTimeline;
+
+	UPROPERTY()
+	UCurveFloat* FloatCurve;
+
+	UFUNCTION()
+	void TimelineCallback(float val);
+
+	UFUNCTION()
+	void TimelineFinishedCallback();
+
+
+
+	UPROPERTY()
+	TEnumAsByte<ETimelineDirection::Type> TimelineDirection;
+
+	// --timeLind
+	UPROPERTY(BlueprintReadOnly)
+		float RoundTime;
 private:
-	
+
 
 
 };

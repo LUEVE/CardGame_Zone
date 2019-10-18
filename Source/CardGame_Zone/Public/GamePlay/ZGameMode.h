@@ -13,9 +13,9 @@ UCLASS()
 class CARDGAME_ZONE_API AZGameMode : public AGameMode
 {
 	GENERATED_BODY()
-
+	
 public:
-
+	friend class AZGameState;
 protected:
 	virtual void HandleMatchHasStarted() override;
 	virtual void HandleMatchHasEnded() override;
@@ -35,6 +35,6 @@ private:
 	//int NowPlayerNum;
 	bool bHasPrepared;
 	int ForPlayerControllerID;
-
+	UPROPERTY()
 	double BaseRoundTime;
 };
