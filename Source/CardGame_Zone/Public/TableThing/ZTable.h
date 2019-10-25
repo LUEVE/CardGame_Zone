@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ZDeck.h"
 #include "Components/TimelineComponent.h"
 //#include "Components/TimelineComponent.h"
 #include "ZTable.generated.h"
@@ -22,12 +23,22 @@ class CARDGAME_ZONE_API AZTable : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AZTable();
-
+	void PlayTimeline();
+	UFUNCTION(BlueprintCallable)
+	void InitTable();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	//UFUNCTION(BlueprintCallable)
-	void InitTable();
+
+
+
+	UFUNCTION()
+	void TimelineCallback(float val);
+	UFUNCTION()
+	void TimelineFinishedCallback();
+	void InitRoundCursor();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -35,13 +46,20 @@ public:
 
 // Variable
 public:
-	void PlayTimeline();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		UStaticMeshComponent *DeckPlace1;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		UStaticMeshComponent *DeckPlace2;
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	UBoxComponent* BoxComponent;
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite,Category = "Component")
 	UStaticMeshComponent *MeshComponent;
-	
+
+
+
+
 	TSubclassOf<AZZoneBlockGrid> ZoneBlockGrid;
 	UPROPERTY(BlueprintReadOnly,Replicated)
 	AZZoneBlockGrid* CurrentZoneBlockGrid;
@@ -56,18 +74,14 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "RoundCursor")
 	FVector CursorEndLocation;
 
+ 
+
 	// timeLine
 	UPROPERTY()
 	UTimelineComponent* MyTimeline;
 
 	UPROPERTY()
 	UCurveFloat* FloatCurve;
-
-	UFUNCTION()
-	void TimelineCallback(float val);
-
-	UFUNCTION()
-	void TimelineFinishedCallback();
 
 
 
@@ -77,6 +91,15 @@ protected:
 	// --timeLind
 	UPROPERTY(BlueprintReadOnly)
 		float RoundTime;
+
+
+	// ≤‚ ‘”√
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AZDeck> DeckKind;
+	AZDeck* Player0_Deck;
+	AZDeck* Player1_Deck;
+
+	//
 private:
 
 

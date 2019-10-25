@@ -49,13 +49,15 @@ protected:
 	UStaticMeshComponent* MeshComponent;
 	UPROPERTY(BlueprintReadWrite,VisibleAnywhere,Category = "Component")
 	USceneComponent* SceneComponent;
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Replicated)
+	TArray<FZoneBlockArrayRow> ZoneBlocksArray;
+
 	UPROPERTY(EditDefaultsOnly,Category = "ZoneBlock")
 	TSubclassOf<AZZoneBlock> ZoneBlock;
 	// UPROPERTY(EditDefaultsOnly, Category = "ZoneBlock")
 	// TSubclassOf<AZPlayerBlock> BasePlayerBlock;
 
-	UPROPERTY(BlueprintReadWrite,VisibleAnywhere,Replicated)
-	TArray<FZoneBlockArrayRow> ZoneBlocksArray;
+
 	
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "ZoneBlock")
 	int BlockSpaceX;

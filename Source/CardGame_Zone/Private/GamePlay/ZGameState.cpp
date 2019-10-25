@@ -7,6 +7,11 @@
 #include "UnrealNetwork.h"
 #include "ZGameMode.h"
 #include "TimerManager.h"
+#include "ZTable.h"
+#include "Components/StaticMeshComponent.h"
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
+#include "ZPlayerController.h"
 
 
 void AZGameState::HandleMatchIsWaitingToStart()
@@ -17,6 +22,11 @@ void AZGameState::HandleMatchIsWaitingToStart()
 	{
 		auto GameMode = GetWorld()->GetAuthGameMode<AZGameMode>();
 		RoundTime = GameMode->BaseRoundTime;
+
+		CurrentTable = GetWorld()->SpawnActor<AZTable>(TableKind, FVector::ZeroVector, FRotator::ZeroRotator);
+		CurrentTable->InitTable();
+	
+		
 	}
 	
 }
@@ -24,6 +34,33 @@ void AZGameState::HandleMatchIsWaitingToStart()
 void AZGameState::HandleMatchHasStarted()
 {
 	Super::HandleMatchHasStarted();
+
+	if (Role != ROLE_Authority)
+	{
+		if (CurrentTable)
+		{
+			// auto Place0 = CurrentTable->DeckPlace1->GetComponentLocation();
+			// auto Place1 = CurrentTable->DeckPlace2->GetComponentLocation();
+			// Player0_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, Place0, FRotator::ZeroRotator);
+			// if (Player0_Deck)
+			// {
+			// 	Player0_Deck->Init(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+			// }
+			// Player1_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, Place1, FRotator::ZeroRotator);
+			// if (Player1_Deck)
+			// {
+			// 	Player1_Deck->Init(UGameplayStatics::GetPlayerController(GetWorld(), 1));
+			// }
+
+			Cast<AZPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->ServeCreateDeck();
+		}
+	}
+
+
+
+
+
+
 }
 
 void AZGameState::RoundHasChanged()
@@ -36,6 +73,17 @@ void AZGameState::RoundHasChanged()
 			AZPlayerController* ZPC = Cast<AZPlayerController>(PC);
 			ZPC->ChangeRoundState();
 		}
+	}
+}
+
+void AZGameState::CreateDeckByController(AZPlayerController* PC)
+{
+	FVector Place;
+	Place = CurrentTable->DeckPlace1->GetComponentLocation();
+	Player0_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, Place, FRotator::ZeroRotator);
+	if (Player0_Deck)
+	{
+		Player0_Deck->Init(this);
 	}
 }
 
@@ -74,5 +122,10 @@ void AZGameState::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > &OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AZGameState,WhoRound);
 	DOREPLIFETIME(AZGameState,RoundTime);
+	DOREPLIFETIME(AZGameState, Player0_Deck);
+	DOREPLIFETIME(AZGameState, Player1_Deck);
+	// DOREPLIFETIME_CONDITION(AZGameState, Player0_Deck, COND_SkipOwner);
+	// DOREPLIFETIME_CONDITION(AZGameState, Player1_Deck, COND_SkipOwner);
+	DOREPLIFETIME(AZGameState,CurrentTable);
 	//DOREPLIFETIME(AZPlayerController, BisMyRound);
 }

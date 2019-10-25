@@ -23,15 +23,24 @@ public:
 
 	UFUNCTION(Reliable,BlueprintCallable, Client)
 	void EndRound();
-
 	UFUNCTION(BlueprintImplementableEvent)
 	void BPEndRound();
 	UFUNCTION(Server,Reliable,WithValidation)
 	void ServeEndRound();
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServeCreateDeck();
+
 	UFUNCTION(BlueprintCallable)
 	void DoServeEndRound();
 
+
+	
+	// do it in serve
+	UFUNCTION()
+	void InitEveryRound();
+
 	void Init(int ID);
+	
 protected:
 	void virtual BeginPlay() override;
 	UFUNCTION(BlueprintCallable)
@@ -60,4 +69,9 @@ protected:
 	UUserWidget* NowRoundWidget;
 	UPROPERTY(BlueprintReadWrite)
 	AZTable* CurrentTable;
+
+	// The Num You Can Do Annexation or Expansion
+	UPROPERTY(BlueprintReadWrite,Replicated)
+	int OperateTime;
+
 };

@@ -18,10 +18,15 @@ AZTable::AZTable()
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComp"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("SphereComp"));
-	
+	DeckPlace1 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DeckComp1"));
+	DeckPlace2 = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DeckComp2"));
+
+
 	RootComponent = SceneComponent;
 	BoxComponent->SetupAttachment(SceneComponent);
 	MeshComponent->SetupAttachment(SceneComponent);
+	DeckPlace1->SetupAttachment(SceneComponent);
+	DeckPlace2->SetupAttachment(SceneComponent);
 	SetReplicates(true);
 
 	CursorBeginLocation = FVector(0, 0, 0);
@@ -34,10 +39,57 @@ AZTable::AZTable()
 // Called when the game starts or when spawned
 void AZTable::BeginPlay()
 {
-	FOnTimelineFloat onTimelineCallback;
-	FOnTimelineEventStatic onTimelineFinishedCallback;
+
 
 	Super::BeginPlay();
+
+	InitRoundCursor();
+
+}
+
+void AZTable::InitTable()
+{
+	FActorSpawnParameters SpawnParam;
+	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	CurrentZoneBlockGrid = GetWorld()->SpawnActor<AZZoneBlockGrid>(ZoneBlockGrid, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParam);
+	if (CurrentZoneBlockGrid)
+	{
+		CurrentZoneBlockGrid->SetOwner(this);
+		CurrentZoneBlockGrid->SetOwnerTable(this);
+	}
+
+	auto P0Location = DeckPlace1->GetComponentLocation();
+	auto P1Location = DeckPlace2->GetComponentLocation();
+
+
+	// create deck
+	// Player0_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, P0Location, FRotator::ZeroRotator);
+	// if(Player0_Deck) 
+	// 	Player0_Deck->Init(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	//
+	// Player1_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, P1Location, FRotator::ZeroRotator);
+	// if(Player1_Deck)
+	// 	Player1_Deck->Init(UGameplayStatics::GetPlayerController(GetWorld(), 1));
+	// ²âÊÔÖ¡Êý¿¨¶Ù
+
+
+}
+
+// Called every frame
+void AZTable::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (MyTimeline != NULL)
+	{
+		MyTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, NULL);
+	}
+}
+
+
+void AZTable::InitRoundCursor()
+{
+	FOnTimelineFloat onTimelineCallback;
+	FOnTimelineEventStatic onTimelineFinishedCallback;
 	auto GameState = GetWorld()->GetGameState<AZGameState>();
 	RoundTime = GameState->RoundTime;
 	if (FloatCurve != NULL)
@@ -67,42 +119,24 @@ void AZTable::BeginPlay()
 		MyTimeline->RegisterComponent();
 	}
 	//PlayTimeline();
-	
+
 	FActorSpawnParameters SpawnParam;
 	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	CurrentRoundCursor = GetWorld()->SpawnActor<AZRoundCursor>(RoundCursorKind, CursorBeginLocation , FRotator::ZeroRotator, SpawnParam);
+	CurrentRoundCursor = GetWorld()->SpawnActor<AZRoundCursor>(RoundCursorKind, CursorBeginLocation, FRotator::ZeroRotator, SpawnParam);
 }
 
-void AZTable::InitTable()
-{
-	FActorSpawnParameters SpawnParam;
-	SpawnParam.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	CurrentZoneBlockGrid = GetWorld()->SpawnActor<AZZoneBlockGrid>(ZoneBlockGrid, FVector::ZeroVector, FRotator::ZeroRotator, SpawnParam);
-	if (CurrentZoneBlockGrid)
-	{
-		CurrentZoneBlockGrid->SetOwner(this);
-		CurrentZoneBlockGrid->SetOwnerTable(this);
-	}
+
+#pragma region TimeLineAbout
 
 
-}
 
-// Called every frame
-void AZTable::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	if (MyTimeline != NULL)
-	{
-		MyTimeline->TickComponent(DeltaTime, ELevelTick::LEVELTICK_TimeOnly, NULL);
-	}
-}
 
 void AZTable::TimelineCallback(float val)
 {
-	 FVector C = FMath::Lerp(CursorBeginLocation, CursorEndLocation, val);
+	 FVector CursorTimeLine = FMath::Lerp(CursorBeginLocation, CursorEndLocation, val);
 	 if (CurrentRoundCursor)
 	 {
-		 CurrentRoundCursor->SetActorLocation(C);
+		 CurrentRoundCursor->SetActorLocation(CursorTimeLine);
 	 }
 
 }
@@ -112,6 +146,7 @@ void AZTable::TimelineFinishedCallback()
 	UE_LOG(LogTemp, Log, TEXT("RoundCursor Timelind End"));
 }
 
+
 void AZTable::PlayTimeline()
 {
 	if (MyTimeline != NULL)
@@ -120,9 +155,13 @@ void AZTable::PlayTimeline()
 	}
 }
 
+
+
 void AZTable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AZTable, CurrentZoneBlockGrid);
 	//DOREPLIFETIME(ASCharacter, bDied);
 }
+
+#pragma endregion TimeLineAbout

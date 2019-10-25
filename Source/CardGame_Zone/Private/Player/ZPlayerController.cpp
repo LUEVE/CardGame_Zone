@@ -85,9 +85,32 @@ bool AZPlayerController::ServeEndRound_Validate()
 	return true;
 }
 
+void AZPlayerController::ServeCreateDeck_Implementation()
+{
+	auto GS = GetWorld()->GetGameState<AZGameState>();
+	if (GS)
+	{
+		GS->CreateDeckByController(this);
+	}
+}
+
+bool AZPlayerController::ServeCreateDeck_Validate()
+{
+	return true;
+}
+
 void AZPlayerController::DoServeEndRound()
 {
 	ServeEndRound();
+}
+
+void AZPlayerController::InitEveryRound()
+{
+	if (Role == ROLE_Authority)
+	{
+		OperateTime = 1;
+		
+	}
 }
 
 void AZPlayerController::Init(int ID)
@@ -102,5 +125,6 @@ void AZPlayerController::GetLifetimeReplicatedProps(TArray< FLifetimeProperty > 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AZPlayerController, PlayerControllerID);
 	DOREPLIFETIME(AZPlayerController, BisMyRound);
+	DOREPLIFETIME(AZPlayerController, OperateTime);
 }
 
