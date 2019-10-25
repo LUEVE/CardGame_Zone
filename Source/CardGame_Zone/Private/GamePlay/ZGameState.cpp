@@ -78,13 +78,27 @@ void AZGameState::RoundHasChanged()
 
 void AZGameState::CreateDeckByController(AZPlayerController* PC)
 {
-	FVector Place;
-	Place = CurrentTable->DeckPlace1->GetComponentLocation();
-	Player0_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, Place, FRotator::ZeroRotator);
-	if (Player0_Deck)
+	if (PC->PlayerControllerID)
 	{
-		Player0_Deck->Init(this);
+		FVector Place;
+		Place = CurrentTable->DeckPlace1->GetComponentLocation();
+		Player0_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, Place, FRotator::ZeroRotator);
+		if (Player0_Deck)
+		{
+			Player0_Deck->Init(PC);
+		}
 	}
+	else
+	{
+		FVector Place;
+		Place = CurrentTable->DeckPlace2->GetComponentLocation();
+		Player1_Deck = GetWorld()->SpawnActor<AZDeck>(DeckKind, Place, FRotator::ZeroRotator);
+		if (Player1_Deck)
+		{
+			Player1_Deck->Init(PC);
+		}
+	}
+	
 }
 
 void AZGameState::ChangeRound()
